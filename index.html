@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <!--mvvm 双向数据绑定 mvvm angular 脏值检测 vue 数据劫持+发布订阅模式 -->
+    <!--不兼容低版本 Object.defineProperty-->
+    <script>
+        let obj = {}
+        Object.defineProperty(obj, 'school', {
+            configurable: true,//是否可配置，默认为false
+            // value: 'yyccqqu',
+            // writable: true, //可更改
+            enumerable: true, //是否可枚举，遍历的时候需要用到
+            get() { // 获取obj.school的值时，会调用get方法
+                return 'yyccqqu'
+            },
+            set(val) { //更改obj.school的值时，会调用set方法
+                console.log(val, 'val')
+            }
+
+        })
+        for (key in obj) {
+            console.log(key)
+        }
+        delete obj.school;
+        console.log(obj, 'obj')
+    </script>
+</body>
+
+</html>
