@@ -116,7 +116,7 @@ function Watcher(vm,exp,fn) { // 通过watcher类的实例都有update方法
     })
     Dep.target = null;
 }
-
+// 每当设置值的时候都会触发set方法，一旦触发，即可替换
 Watcher.prototype.update = function() {
   let val = this.vm;
     let arr = this.exp.split(".");
