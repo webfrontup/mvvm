@@ -14,8 +14,42 @@ function Yyccqqu(options = {}) {
             }
         })
     }
-
+    new Complie(options.el, this);
 }
+
+function Complie(el,vm) {
+    // el表示替换的范围
+    vm.$el = document.querySelector(el);
+    //创建文档碎片 放如内存中
+    let fragment = document.createDocumentFragment();
+    while (child = vm.$el.firstChild) { //将app内容 放入内存中
+        fragment.appendChild(child)
+    }
+    replace(fragment);
+    function replace(fragment) {
+        Array.from(fragment.childNodes).forEach(function (node) {
+            let text = node.textContent;
+            let reg = /\{\{(.*)\}\}/
+            //http://www.runoob.com/jsref/prop-node-nodetype.html
+            if (node.nodeType === 3 && reg.test(text)) {
+                console.log(RegExp.$1)
+                let arr = RegExp.$1.split(".");
+                let val = vm;
+                arr.forEach(function(k){ //取this.a.a
+                    val = val[k];
+                })
+                node.textContent = text.replace(/\{\{(.*)\}\}/,val);
+            }
+            if (node.childNodes) {
+                replace(node)
+            }
+
+        });
+    }
+    
+    vm.$el.appendChild(fragment);
+}
+
 
 // vm.$options
 // 观察对象给对象增加ObjectDefineProperty
@@ -39,6 +73,7 @@ function Observe(data) {
 }
 
 function observe(data) {
+    if(typeof data !=='object') return
     return new Observe(data)
 }
 
