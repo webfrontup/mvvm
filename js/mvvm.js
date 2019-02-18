@@ -81,3 +81,29 @@ function observe(data) {
 // 深度响应 因为每次赋予一个新对象时会给这个新对象增加数据劫持
 
 
+
+//发布订阅
+
+//绑定的方法‘都有一个update’属性
+function Dep() {
+    this.subs = []
+}
+
+Dep.prototype.addSub = function (sub) { //订阅
+    this.subs.push(sub)
+}
+
+Dep.prototype.notify = function () {
+    this.subs.forEach(sub => sub.update())
+}
+
+// watcher
+function Watcher(fn) { // 通过watcher类的实例都有update方法
+    this.fn = fn;
+}
+
+Watcher.prototype.update = function () {
+    this.fn();
+}
+
+
