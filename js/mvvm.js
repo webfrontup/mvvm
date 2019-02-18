@@ -43,6 +43,27 @@ function Complie(el,vm) {
                 });
                 node.textContent = text.replace(/\{\{(.*)\}\}/,val);
             }
+            if (node.nodeType === 1){
+                //元素节点
+                let nodeAttrs = node.attributes; //获取当前dom节点的属性
+                console.log(nodeAttrs)
+                Array.from(nodeAttrs).forEach(function(attr){
+                    console.log(attr.name, attr.value, attr)
+                    let name = attr.name;
+                    let exp = attr.value;
+                    if(name.indexOf('v-')==0){
+                        node.value = vm[exp]; 
+                    }
+                    new Watcher(vm,exp,function(newVal) {
+                        node.value = newVal; //当watcher触发时会自动将内容放入输入框内
+                    })
+                    node.addEventListener('input',function(e){
+                        let newVal = e.target.value;
+                        vm[exp] = newVal;
+                    })
+                })
+            }
+
             if (node.childNodes) {
                 replace(node)
             }
