@@ -14,8 +14,22 @@ function Yyccqqu(options = {}) {
             }
         })
     }
+    initComputed.call(this);
     new Complie(options.el, this);
 }
+
+function initComputed () { //具有缓存功能
+    let vm = this;
+    let computed = this.$options.computed;
+    Object.keys(computed).forEach(function(key){
+        Object.defineProperty(vm,key,{
+            //如果是函数直接调用，否则调用.get方法
+            get: typeof computed[key] === 'function' ? computed[key] : computed[key].get,
+            set() { }
+        })
+    })
+}
+
 
 function Complie(el,vm) {
     // el表示替换的范围
