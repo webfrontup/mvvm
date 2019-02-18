@@ -38,6 +38,9 @@ function Complie(el,vm) {
                 arr.forEach(function(k){ //取this.a.a
                     val = val[k];
                 })
+                new Watcher(vm, RegExp.$1,function(newVal) { //函数需要接收一个新值
+                    node.textContent = text.replace(/\{\{(.*)\}\}/, newVal);
+                });
                 node.textContent = text.replace(/\{\{(.*)\}\}/,val);
             }
             if (node.childNodes) {
@@ -54,18 +57,21 @@ function Complie(el,vm) {
 // vm.$options
 // 观察对象给对象增加ObjectDefineProperty
 function Observe(data) {
+    let dep = new Dep();//将需要观察的放进watcher中
     for (let key in data) {
         let val = data[key]
         observe(val)
         Object.defineProperty(data, key, {
             enumerable: true,
             get() {
+                Dep.target&&dep.addSub(Dep.target);//[watcher]
                 return val;
             },
             set(newVal) {
                 if (newVal === val) return
                 val = newVal;
                 observe(newVal)
+                dep.notify(); //让所有的watcher的update方法执行即可
             }
         })
     }
@@ -98,12 +104,26 @@ Dep.prototype.notify = function () {
 }
 
 // watcher
-function Watcher(fn) { // 通过watcher类的实例都有update方法
+function Watcher(vm,exp,fn) { // 通过watcher类的实例都有update方法
     this.fn = fn;
+    this.vm = vm;
+    this.exp = exp; //添加到订阅中
+    Dep.target = this;
+    let val = vm;
+    let arr = exp.split(".");
+    arr.forEach(function(k){
+        val = val[k]
+    })
+    Dep.target = null;
 }
 
-Watcher.prototype.update = function () {
-    this.fn();
-}
+Watcher.prototype.update = function() {
+  let val = this.vm;
+    let arr = this.exp.split(".");
+    arr.forEach(function (k) {
+        val = val[k]
+    })
+  this.fn(val); // newVal
+};
 
 
